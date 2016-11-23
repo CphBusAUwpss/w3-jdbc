@@ -1,7 +1,11 @@
 package presentation;
 
 import dataaccess.UserMapper;
+import domain.User;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +51,16 @@ public class Login extends HttpServlet {
         String password = request.getParameter("password");
         boolean isAuthenticated = um.authenticateUser(username, password);
         if(isAuthenticated){
-            response.getWriter().print("Du er nu logget ind");
+            try {
+                //response.getWriter().print("Du er nu logget ind");
+                List<User> users = um.getAllUsers();
+                PrintWriter out = response.getWriter();
+                request.setAttribute("userlist", users);
+                request.getRequestDispatcher("showusers.jsp").forward(request, response);
+                
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }else{
             response.getWriter().print("du er ikke logget ind");
         }
